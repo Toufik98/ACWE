@@ -13,6 +13,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 import scipy.ndimage as nd
+import argparse
+import cv2
 
 def acwe(Img, phi0, max_iter, time_step, mu, v, lambda1, lambda2, epsilon):
     """
@@ -154,11 +156,22 @@ def initialize(width, height, x_center, y_center, radius):
     return phi
 	
 if __name__ == "__main__":
-
-    img = Image.open("Images_TP/rondeldent.tif").convert("L")
+    
+    # Parse the arguments
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("-i", "--image", help="path to input image", default="image.png")
+    argparser.add_argument("-x", "--x_center", help="x coordinate of center of circle", default=100, type=int)
+    argparser.add_argument("-y", "--y_center", help="y coordinate of center of circle", default=100, type=int)
+    argparser.add_argument("-r", "--radius", help="radius of circle", default=50, type=int)
+    argparser.add_argument("-t", "--time-step", help="time step", default=0.1, type=float)
+    argparser.add_argument("-l", "--lambda1", help="weight of image force", default=0.1, type=float)
+    argparser.add_argument("-m", "--lambda2", help="weight of curvature force", default=0.1, type=float)
+    
+    img = cv2.imread(argparser.parse_args().image, 0)
+    
     #initialize phi
     width, height = img.size
-    phi0 = initialize(width, height, x_center=100, y_center=50, radius=45)
+    phi0 = initialize(width, height, argparser.parse_args().x_center, argparser.parse_args().y_center, argparser.parse_args().radius)
     print("phi0:", phi0)
     print ("index of 0:", np.flatnonzero(np.array(img)==0))
 
